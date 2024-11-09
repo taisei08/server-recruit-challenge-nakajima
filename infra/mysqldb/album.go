@@ -3,6 +3,7 @@ package mysqldb
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/pulse227/server-recruit-challenge-sample/model"
 	"github.com/pulse227/server-recruit-challenge-sample/repository"
@@ -30,7 +31,7 @@ func (r *albumRepository) GetAll(ctx context.Context) ([]*model.Album, error) {
 	defer rows.Close()
 	for rows.Next() {
 		album := &model.Album{}
-		if err := rows.Scan(&album.ID, &album.Title, &album.SingerID); err != nil {
+		if err := rows.Scan(&album.ID, &album.Title, &album.Singer.ID); err != nil {
 			return nil, err
 		}
 		if album.ID != 0 {
@@ -46,14 +47,15 @@ func (r *albumRepository) GetAll(ctx context.Context) ([]*model.Album, error) {
 
 func (r *albumRepository) Get(ctx context.Context, id model.AlbumID) (*model.Album, error) {
 	album := &model.Album{}
-	query := "SELECT id, title, singer_id FROM albums WHERE id = ?"
+	query := "SELECT albums.id, title, singer_id, singers.name FROM albums INNER JOIN singers ON albums.singer_id = singers.id WHERE albums.id = ?;"
 	rows, err := r.db.QueryContext(ctx, query, id)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+	fmt.Println(rows.Columns())
 	for rows.Next() {
-		if err := rows.Scan(&album.ID, &album.Title, &album.SingerID); err != nil {
+		if err := rows.Scan(&album.ID, &album.Title, &album.Singer.ID, &album.Singer.Name); err != nil {
 			return nil, err
 		}
 	}
@@ -68,7 +70,7 @@ func (r *albumRepository) Get(ctx context.Context, id model.AlbumID) (*model.Alb
 
 func (r *albumRepository) Add(ctx context.Context, album *model.Album) error {
 	query := "INSERT INTO albums (id, title, singer_id) VALUES (?, ?, ?)"
-	if _, err := r.db.ExecContext(ctx, query, album.ID, album.Title, album.SingerID); err != nil {
+	if _, err := r.db.ExecContext(ctx, query, album.ID, album.Title, album.Singer.ID); err != nil {
 		return err
 	}
 	return nil
