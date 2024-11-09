@@ -23,7 +23,7 @@ var _ repository.AlbumRepository = (*albumRepository)(nil)
 
 func (r *albumRepository) GetAll(ctx context.Context) ([]*model.Album, error) {
 	albums := []*model.Album{}
-	query := "SELECT id, title, singer_id FROM albums ORDER BY id ASC"
+	query := "SELECT albums.id, title, singer_id, singers.name FROM albums INNER JOIN singers ON albums.singer_id = singers.id ORDER BY id ASC"
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func (r *albumRepository) GetAll(ctx context.Context) ([]*model.Album, error) {
 	defer rows.Close()
 	for rows.Next() {
 		album := &model.Album{}
-		if err := rows.Scan(&album.ID, &album.Title, &album.Singer.ID); err != nil {
+		if err := rows.Scan(&album.ID, &album.Title, &album.Singer.ID, &album.Singer.Name); err != nil {
 			return nil, err
 		}
 		if album.ID != 0 {
