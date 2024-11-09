@@ -34,7 +34,9 @@ func NewRouter(
 	mux.HandleFunc("GET /singers/{id}", singerController.GetSingerDetailHandler)
 	mux.HandleFunc("POST /singers", singerController.PostSingerHandler)
 	mux.HandleFunc("DELETE /singers/{id}", singerController.DeleteSingerHandler)
+	
 	mux.HandleFunc("GET /albums", albumController.GetAlbumListHandler)
+	mux.HandleFunc("GET /albums/{id}", albumController.GetAlbumDetailHandler)
 
 	wrappedMux := middleware.LoggingMiddleware(mux)
 

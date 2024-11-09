@@ -8,4 +8,5 @@ import (
 
 type AlbumRepository interface {
 	GetAll(ctx context.Context) ([]*model.Album, error)
+	Get(ctx context.Context, id model.AlbumID) (*model.Album, error)
 }
