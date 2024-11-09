@@ -10,6 +10,7 @@ import (
 type AlbumService interface {
 	GetAlbumListService(ctx context.Context) ([]*model.Album, error)
 	GetAlbumService(ctx context.Context, albumID model.AlbumID) (*model.Album, error)
+	PostAlbumService(ctx context.Context, album *model.Album) error
 }
 
 type albumService struct {
@@ -36,4 +37,15 @@ func (s *albumService) GetAlbumService(ctx context.Context, albumID model.AlbumI
 		return nil, err
 	}
 	return album, nil
+}
+
+func (s *albumService) PostAlbumService(ctx context.Context, album *model.Album) error {
+	if err := album.Validate(); err != nil {
+		return err
+	}
+
+	if err := s.albumRepository.Add(ctx, album); err != nil {
+		return err
+	}
+	return nil
 }

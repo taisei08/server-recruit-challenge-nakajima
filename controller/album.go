@@ -49,3 +49,22 @@ func (c *albumController) GetAlbumDetailHandler(w http.ResponseWriter, r *http.R
 	w.WriteHeader(200)
 	json.NewEncoder(w).Encode(album)
 }
+
+// POST /albums のハンドラー
+func (c *albumController) PostAlbumHandler(w http.ResponseWriter, r *http.Request) {
+	var album *model.Album
+	if err := json.NewDecoder(r.Body).Decode(&album); err != nil {
+		err = fmt.Errorf("invalid body param: %w", err)
+		errorHandler(w, r, 400, err.Error())
+		return
+	}
+
+	if err := c.service.PostAlbumService(r.Context(), album); err != nil {
+		errorHandler(w, r, 500, err.Error())
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(album)
+}

@@ -37,6 +37,7 @@ func NewRouter(
 	
 	mux.HandleFunc("GET /albums", albumController.GetAlbumListHandler)
 	mux.HandleFunc("GET /albums/{id}", albumController.GetAlbumDetailHandler)
+	mux.HandleFunc("POST /albums", albumController.PostAlbumHandler)
 
 	wrappedMux := middleware.LoggingMiddleware(mux)
 
