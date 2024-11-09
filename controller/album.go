@@ -68,3 +68,20 @@ func (c *albumController) PostAlbumHandler(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(200)
 	json.NewEncoder(w).Encode(album)
 }
+
+// DELETE /albums/{id} のハンドラー
+func (c *albumController) DeleteAlbumHandler(w http.ResponseWriter, r *http.Request) {
+	idString := r.PathValue("id")
+	albumID, err := strconv.Atoi(idString)
+	if err != nil {
+		err = fmt.Errorf("invalid path param: %w", err)
+		errorHandler(w, r, 400, err.Error())
+		return
+	}
+
+	if err := c.service.DeleteAlbumService(r.Context(), model.AlbumID(albumID)); err != nil {
+		errorHandler(w, r, 500, err.Error())
+		return
+	}
+	w.WriteHeader(204)
+}

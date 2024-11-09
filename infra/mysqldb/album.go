@@ -73,3 +73,11 @@ func (r *albumRepository) Add(ctx context.Context, album *model.Album) error {
 	}
 	return nil
 }
+
+func (r *albumRepository) Delete(ctx context.Context, id model.AlbumID) error {
+	query := "DELETE FROM albums WHERE id = ?"
+	if _, err := r.db.ExecContext(ctx, query, id); err != nil {
+		return err
+	}
+	return nil
+}
