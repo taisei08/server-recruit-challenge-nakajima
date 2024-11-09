@@ -3,9 +3,9 @@ package model
 type AlbumID int
 
 type Album struct {
-	ID       AlbumID  `json:"id"`
-	Title    string   `json:"title"`
-	Singer   Singer   `json:"singer"`
+	ID       AlbumID  `json:"id,omitempty"`
+	Title    string   `json:"title,omitempty"`
+	Singer   Singer   `json:"singer,omitempty"`
 }
 
 func (a *Album) Validate() error {
