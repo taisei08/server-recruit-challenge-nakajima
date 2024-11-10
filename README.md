@@ -111,12 +111,36 @@ curl http://localhost:8888/albums
 6. 5のために`albums`と`singers`の中間テーブルを作成し、作曲者が複数いても1対多リレーションに落とし込める設計に変更する
 
 ### 開発面
-1. `infra/mysqldb`と`service`と`controller`それぞれへのテスト
+1. `infra/mysqldb`と`service`と`controller`それぞれへのテストの追加
 2. アプリケーションもdockerで動かす
 3. 基本的なCRUDのルーティングの処理を共通化したい
+    ``` go
+      // この辺りの処理をエンドポイント毎に共通化したい
+      mux.HandleFunc("GET /singers", singerController.GetSingerListHandler)
+      mux.HandleFunc("GET /singers/{id}", singerController.GetSingerDetailHandler)
+      mux.HandleFunc("POST /singers", singerController.PostSingerHandler)
+      mux.HandleFunc("DELETE /singers/{id}", singerController.DeleteSingerHandler)
+
+      mux.HandleFunc("GET /albums", albumController.GetAlbumListHandler)
+      mux.HandleFunc("GET /albums/{id}", albumController.GetAlbumDetailHandler)
+      mux.HandleFunc("POST /albums", albumController.PostAlbumHandler)
+      mux.HandleFunc("DELETE /albums/{id}", albumController.DeleteAlbumHandler)
+    ```
 4. AUTO_INCREMENTを使用しているためINSERT時のID指定は無くしたい（課題を解く上では今のままの方がいいが）
 5. AlbumのモデルからSingerIDフィールドを消したい
-6. 9のためにリクエスト形式をモデルに沿ったものにしたい
+6. 5のためにリクエスト形式をモデルに沿ったものにしたい
+    ``` go
+    type Album struct {
+      ID       AlbumID  `json:"id,omitempty"`
+      Title    string   `json:"title,omitempty"`
+      SingerID SingerID `json:"singer_id,omitempty"` // リクエストの形式を変えてこのフィールドを削除したい
+      Singer   Singer   `json:"singer,omitempty"`
+    }
+    ```
+    ``` plaintext
+    以下の形のリクエストにしたい
+    curl -X POST -d '{"id":1,"title":"Alice's 1st Album","singer":{"name":"Alice"}}'
+    ```
 7. POST時のバリデーションエラーのステータスコードが`500`なので`400`にしたい
 8. GET時に存在しないIDを指定したときエラーのステータスコードが`500`なので`404`にしたい
 9. OpenAPI仕様書の導入
