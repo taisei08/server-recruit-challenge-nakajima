@@ -1,0 +1,182 @@
+openapi: 3.0.3
+info:
+  title: アルバム管理API
+  version: 1.0.0
+  description: アルバムの一覧取得、追加、削除、詳細取得ができるAPI
+
+servers:
+  - url: http://localhost:8888
+
+paths:
+  /singers:
+    get:
+      summary: 歌手の一覧を取得
+      description: 登録されているすべての歌手を取得します。
+      responses:
+        '200':
+          description: 歌手の一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Singer'
+    post:
+      summary: 歌手を追加
+      description: 新しい歌手を追加します。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Singer'
+      responses:
+        '200':
+          description: 追加された歌手の情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Singer'
+        '500':
+          description: 歌手名が空文字であるか255文字より大きい時バリデーションエラー        
+
+  /singers/{id}:
+    get:
+      summary: 指定IDの歌手を取得
+      description: 指定したIDの歌手情報を取得します。
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 指定IDの歌手の情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Singer'
+        '500':
+          description: 指定IDの歌手が存在しない場合
+
+    delete:
+      summary: 指定IDの歌手を削除
+      description: 指定したIDの歌手を削除します。
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: 削除クエリが実行された時（削除行数が0の場合も含む）
+
+  /albums:
+    get:
+      summary: アルバムの一覧を取得
+      description: 登録されているすべてのアルバムを取得します。
+      responses:
+        '200':
+          description: アルバムの一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlbumWithSinger'
+    post:
+      summary: アルバムを追加
+      description: 新しいアルバムを追加します。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Album'
+      responses:
+        '200':
+          description: 追加されたアルバムの情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Album'
+        '500':
+          description: タイトルが空文字であるか255文字より大きい時バリデーションエラー        
+
+  /albums/{id}:
+    get:
+      summary: 指定IDのアルバムを取得
+      description: 指定したIDのアルバム情報を取得します。
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 指定IDのアルバムの情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlbumWithSinger'
+        '500':
+          description: 指定IDのアルバムが存在しない場合
+    delete:
+      summary: 指定IDのアルバムを削除
+      description: 指定したIDのアルバムを削除します。
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: 削除クエリが実行された時（削除行数が0の場合も含む）
+
+components:
+  schemas:
+    Album:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: アルバムのID
+          example: 1
+        title:
+          type: string
+          description: アルバムのタイトル
+          example: "Alice's 1st Album"
+        singer_id:
+          type: integer
+          description: 歌手のID
+          example: 1
+
+    Singer:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 歌手のID
+          example: 1
+        name:
+          type: string
+          description: 歌手の名前
+          example: "Alice"
+
+    AlbumWithSinger:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: アルバムのID
+          example: 1
+        title:
+          type: string
+          description: アルバムのタイトル
+          example: "Alice's 1st Album"
+        singer:
+          $ref: '#/components/schemas/Singer'
