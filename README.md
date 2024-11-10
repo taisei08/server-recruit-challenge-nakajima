@@ -103,9 +103,9 @@ curl http://localhost:8888/albums
 実装をする必要はありません。
 
 ### 機能面
-1. GetALL関数が全てのデータを取得してしまうためLIMIT・OFFSETで区分けで取得する
+1. アルバムの一覧を取得するとき、一度に全てのデータを取得してしまうため`LIMIT``OFFSET`で区分けで取得する
 2. 管理者機能・ユーザー機能をつけて`POST`や`DELETE`ができる人を制限する
-3. 曲名や歌手名を検索できる機能の追加
+3. 曲名や歌手名を名前で検索できる機能の追加
 4. 歌手・アルバムデータの更新処理も可能にする
 5. 一つのアルバムに対して複数人の歌手を登録できるようにする
 6. 5のために`albums`と`singers`の中間テーブルを作成し、作曲者が複数いても1対多リレーションに落とし込める設計に変更する
@@ -126,8 +126,8 @@ curl http://localhost:8888/albums
       mux.HandleFunc("POST /albums", albumController.PostAlbumHandler)
       mux.HandleFunc("DELETE /albums/{id}", albumController.DeleteAlbumHandler)
     ```
-4. AUTO_INCREMENTを使用しているためINSERT時のID指定は無くしたい（課題を解く上では今のままの方がいいが）
-5. AlbumのモデルからSingerIDフィールドを消したい
+4. `AUTO_INCREMENT`を使用しているためINSERT時のID指定は無くしたい（課題を解く上では今のままの方がいいが）
+5. `Album`モデルから`SingerID`フィールドを消したい
 6. 5のためにリクエスト形式をモデルに沿ったものにしたい
     ``` go
     type Album struct {
@@ -141,6 +141,6 @@ curl http://localhost:8888/albums
     以下の形のリクエストにしたい
     curl -X POST -d '{"id":1,"title":"Alice's 1st Album","singer":{"name":"Alice"}}'
     ```
-7. POST時のバリデーションエラーのステータスコードが`500`なので`400`にしたい
-8. GET時に存在しないIDを指定したときエラーのステータスコードが`500`なので`404`にしたい
+7. `POST`時のバリデーションエラーのステータスコードが`500`なので`400`にしたい
+8. `GET`時に存在しないIDを指定したときエラーのステータスコードが`500`なので`404`にしたい
 9. OpenAPI仕様書の導入
